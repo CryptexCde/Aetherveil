@@ -141,20 +141,20 @@ function Backdrop.Init(parent)
 	voidHole = UI.new("Frame", {
 		Name = "BlackHole",
 		AnchorPoint = Vector2.new(0.5, 0.5),
-		Position = UDim2.fromScale(0.4, 0.15),
-		Size = UDim2.fromScale(0.12, 0.12),
+		Position = UDim2.fromScale(0.505, 0.13),
+		Size = UDim2.fromScale(0.1, 0.1),
 		SizeConstraint = Enum.SizeConstraint.RelativeYY,
 		BackgroundTransparency = 1,
 		Parent = layer,
 	})
 	-- soft glow: stacked circles that fade outwards
-	for i, size in ipairs({ 2.2, 1.7, 1.3, 0.95 }) do
+	for i, size in ipairs({ 2.0, 1.75, 1.5, 1.28, 1.08, 0.9 }) do
 		local glow = UI.new("Frame", {
 			AnchorPoint = Vector2.new(0.5, 0.5),
 			Position = UDim2.fromScale(0.5, 0.5),
 			Size = UDim2.fromScale(size, size * 0.55),
 			BackgroundColor3 = hex("#ff5ce0"),
-			BackgroundTransparency = 0.9 - i * 0.04,
+			BackgroundTransparency = 0.95 - i * 0.012,
 			BorderSizePixel = 0,
 			ZIndex = 1,
 			Parent = voidHole,
