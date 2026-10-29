@@ -27,10 +27,10 @@ local UI_SOUNDS = {
 }
 
 local cache = {}
-function Sound.Play(name)
+local function get(name)
 	local def = UI_SOUNDS[name]
 	if not def then
-		return
+		return nil
 	end
 	local s = cache[name]
 	if not s then
@@ -43,8 +43,24 @@ function Sound.Play(name)
 		s.Parent = SoundService
 		cache[name] = s
 	end
-	s.TimePosition = 0
-	s:Play()
+	return s
+end
+
+function Sound.Play(name)
+	local s = get(name)
+	if s then
+		s.TimePosition = 0
+		s:Play()
+	end
+end
+
+-- All UI sounds, for the loading screen to preload.
+function Sound.Preload()
+	local list = {}
+	for name in pairs(UI_SOUNDS) do
+		table.insert(list, get(name))
+	end
+	return list
 end
 
 return Sound

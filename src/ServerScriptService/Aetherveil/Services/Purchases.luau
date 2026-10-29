@@ -31,10 +31,8 @@ do
 end
 Purchases.PortalService = portalService
 
+-- Real ownership only (no free test access), so locked elements stay locked.
 function Purchases.Owns(player, key)
-	if key == "PortalWalker" then
-		return portalService ~= nil and portalService.HasPass(player) == true
-	end
 	local t = owned[player]
 	return t ~= nil and t[key] == true
 end
@@ -50,7 +48,7 @@ end
 local function refreshOwnership(player)
 	owned[player] = owned[player] or {}
 	for _, def in ipairs(Store.Gamepasses) do
-		if def.Key ~= "PortalWalker" and def.Id ~= 0 then
+		if def.Id ~= 0 then
 			local ok, result = pcall(function()
 				return MarketplaceService:UserOwnsGamePassAsync(player.UserId, def.Id)
 			end)
@@ -139,10 +137,8 @@ function Purchases.Init()
 		if not def then
 			return
 		end
-		if def.Key ~= "PortalWalker" then
-			owned[player] = owned[player] or {}
-			owned[player][def.Key] = true
-		end
+		owned[player] = owned[player] or {}
+		owned[player][def.Key] = true
 		Notify.Toast(player, def.Name .. " unlocked!", "success")
 		task.delay(0.5, function()
 			changedEvent:Fire(player)

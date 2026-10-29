@@ -144,6 +144,14 @@ function ElementsPage:BuildCard(parent, def, order)
 		end,
 	})
 
+	-- preview this element's look on the background while hovering
+	card.Root.MouseEnter:Connect(function()
+		self.App:PreviewElement(def.Id)
+	end)
+	card.Root.MouseLeave:Connect(function()
+		self.App:PreviewElement(nil)
+	end)
+
 	return { Card = card, Button = button, Badge = badge, BadgeText = badgeText, Def = def }
 end
 
@@ -225,6 +233,7 @@ function ElementsPage:Show()
 end
 
 function ElementsPage:Hide()
+	self.App:PreviewElement(nil)
 	self.Page:Hide()
 	if self.StopAnim then
 		self.StopAnim()

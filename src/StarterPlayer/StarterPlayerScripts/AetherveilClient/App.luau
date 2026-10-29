@@ -61,6 +61,7 @@ function App.Start(gui)
 	Overlay.Init(overlayLayer, canvas)
 	HUD.Init(hudLayer, self)
 	Overlay.ShowLoading("Awakening the veil")
+	Overlay.SetProgress(0, "Loading assets…")
 
 	self.Main = MainMenu.new(canvas, self)
 	self.Pages = {
@@ -87,9 +88,31 @@ function App.Start(gui)
 		Overlay.Toast(text, kind)
 	end)
 
+	-- loading: assets, then the menu world, then the player's profile
+	local ContentProvider = game:GetService("ContentProvider")
+	local assets = Backdrop.Assets()
+	for _, s in ipairs(require(script.Parent.Sound).Preload()) do
+		table.insert(assets, s)
+	end
+	local total = #assets
+	Overlay.SetProgress(0, ("Loading assets… 0 / %d"):format(total))
+	for i, asset in ipairs(assets) do
+		pcall(function()
+			ContentProvider:PreloadAsync({ asset })
+		end)
+		Overlay.SetProgress(0.75 * i / total, ("Loading assets… %d / %d"):format(i, total))
+	end
+	Overlay.SetProgress(0.78, "Preparing the world…")
+	Backdrop.StreamWorld()
+	Overlay.SetProgress(0.9, "Summoning your profile…")
 	local data = State.WaitForData()
 	SettingsApplier.Apply(data.Settings)
-	task.wait(0.4)
+	Backdrop.SetElement(data.Element)
+	State.Changed:Connect(function(d)
+		Backdrop.SetElement(d.Element)
+	end)
+	Overlay.SetProgress(1, "Ready")
+	task.wait(0.5)
 
 	if player:GetAttribute("InGame") then
 		self:EnterGame()
@@ -130,6 +153,10 @@ function App:Back()
 	self.Current = nil
 	Animator.Tween(self.Dim, 0.4, { BackgroundTransparency = 1 })
 	self.Main:Show()
+end
+
+function App:PreviewElement(id)
+	Backdrop.Preview(id)
 end
 
 function App:EnterGame()

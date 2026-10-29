@@ -9,6 +9,7 @@ local C = Theme.Colors
 local Overlay = {}
 
 local loading, loadingText, stopSpin
+local progressBox, progressFill, progressTip, progressDetail, progressPercent
 local toastHolder
 local dialogLayer
 
@@ -56,6 +57,57 @@ function Overlay.Init(fullLayer, canvas)
 		ZIndex = 52,
 		Parent = center,
 	})
+	-- asset loading bar
+	progressBox = UI.new("Frame", {
+		Name = "Progress",
+		AnchorPoint = Vector2.new(0.5, 0),
+		Position = UDim2.new(0.5, 0, 0, 178),
+		Size = UDim2.fromOffset(380, 40),
+		BackgroundTransparency = 1,
+		ZIndex = 52,
+		Visible = false,
+		Parent = center,
+	})
+	local track = UI.new("Frame", {
+		Size = UDim2.new(1, 0, 0, 4),
+		BackgroundColor3 = C.Panel,
+		BorderSizePixel = 0,
+		ZIndex = 52,
+		Parent = progressBox,
+	})
+	UI.stroke(track, C.GoldDeep, 1, 0.4)
+	progressFill = UI.new("Frame", {
+		Size = UDim2.fromScale(0, 1),
+		BackgroundColor3 = Color3.new(1, 1, 1),
+		BorderSizePixel = 0,
+		ZIndex = 53,
+		Parent = track,
+	})
+	UI.gradient(progressFill, ColorSequence.new(C.Accent:Lerp(Color3.new(0, 0, 0), 0.3), C.Accent2))
+	progressTip = UI.diamond({ Parent = track, Size = 10, Color = C.Accent2, Position = UDim2.fromScale(0, 0.5), ZIndex = 54 })
+	progressDetail = UI.label({
+		Position = UDim2.fromOffset(0, 14),
+		Size = UDim2.new(1, -60, 0, 20),
+		FontFace = Theme.Fonts.Body,
+		Text = "",
+		TextSize = 15,
+		TextColor3 = C.TextFaint,
+		ZIndex = 52,
+		Parent = progressBox,
+	})
+	progressPercent = UI.label({
+		AnchorPoint = Vector2.new(1, 0),
+		Position = UDim2.new(1, 0, 0, 14),
+		Size = UDim2.fromOffset(60, 20),
+		FontFace = Theme.Fonts.Number,
+		Text = "0%",
+		TextSize = 14,
+		TextColor3 = C.Gold,
+		TextXAlignment = Enum.TextXAlignment.Right,
+		ZIndex = 52,
+		Parent = progressBox,
+	})
+
 	stopSpin = Animator.Every(function(_, t)
 		if loading.Visible then
 			spinner.Rotation = 45 + t * 120
@@ -93,8 +145,29 @@ end
 
 function Overlay.ShowLoading(text)
 	loadingText.Text = Theme.Spaced(text or "Loading", " ")
+	progressBox.Visible = false
 	loading.Visible = true
 	Animator.Tween(loading, 0.35, { GroupTransparency = 0 })
+end
+
+-- Loading bar: alpha 0..1, detail like "Loading assets… 12 / 48". Pass nil to hide the bar.
+function Overlay.SetProgress(alpha, detail)
+	if alpha == nil then
+		progressBox.Visible = false
+		return
+	end
+	progressBox.Visible = true
+	alpha = math.clamp(alpha, 0, 1)
+	Animator.Tween(progressFill, 0.25, { Size = UDim2.fromScale(alpha, 1) })
+	Animator.Tween(progressTip, 0.25, { Position = UDim2.fromScale(alpha, 0.5) })
+	progressPercent.Text = ("%d%%"):format(math.floor(alpha * 100 + 0.5))
+	if detail then
+		progressDetail.Text = detail
+	end
+end
+
+function Overlay.SetLoadingText(text)
+	loadingText.Text = Theme.Spaced(text, " ")
 end
 
 function Overlay.HideLoading()

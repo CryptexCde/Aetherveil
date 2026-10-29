@@ -22,7 +22,7 @@ Elements.List = {
 		Color = Color3.fromRGB(255, 120, 40),
 		Accent = Color3.fromRGB(255, 214, 130),
 		Description = "Roaring flame given form. Hurl fireballs, erupt in a blazing nova and dash on a trail of embers.",
-		Unlock = { Type = "Free" },
+		Unlock = { Type = "Coins", Price = 750 },
 		Abilities = {
 			{ Id = "Bolt", Key = "Q", Name = "Fireball", Type = "Bolt", Cooldown = 2.5, Damage = 18, Speed = 120, Range = 140, Splash = 6, Size = 1.8 },
 			{ Id = "Nova", Key = "E", Name = "Inferno Nova", Type = "Nova", Cooldown = 9, Damage = 26, Radius = 16, Knockback = 50 },
@@ -35,7 +35,7 @@ Elements.List = {
 		Color = Color3.fromRGB(60, 190, 255),
 		Accent = Color3.fromRGB(200, 245, 255),
 		Description = "The patient strength of the deep. Crash enemies away with tidal surges that also mend your wounds.",
-		Unlock = { Type = "Free" },
+		Unlock = { Type = "Coins", Price = 750 },
 		Abilities = {
 			{ Id = "Bolt", Key = "Q", Name = "Tide Orb", Type = "Bolt", Cooldown = 2.2, Damage = 15, Speed = 100, Range = 130, Splash = 8, Size = 2 },
 			{ Id = "Nova", Key = "E", Name = "Tidal Surge", Type = "Nova", Cooldown = 10, Damage = 18, Radius = 20, Knockback = 85, HealSelf = 15 },
@@ -48,7 +48,7 @@ Elements.List = {
 		Color = Color3.fromRGB(176, 140, 80),
 		Accent = Color3.fromRGB(150, 220, 110),
 		Description = "Unbreakable and slow to anger. Heavy boulders and ground-splitting quakes crush anything in your path.",
-		Unlock = { Type = "Coins", Price = 750 },
+		Unlock = { Type = "Free" },
 		Abilities = {
 			{ Id = "Bolt", Key = "Q", Name = "Boulder", Type = "Bolt", Cooldown = 3.5, Damage = 26, Speed = 80, Range = 120, Splash = 7, Size = 2.6, Material = "Slate" },
 			{ Id = "Nova", Key = "E", Name = "Quake", Type = "Nova", Cooldown = 11, Damage = 32, Radius = 18, Knockback = 40 },
