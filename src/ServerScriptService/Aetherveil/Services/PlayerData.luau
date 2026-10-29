@@ -116,7 +116,12 @@ local function loadAsync(player)
 			return result, true
 		end
 		if not ok then
-			warn(("[Aetherveil] Load attempt %d for %s failed: %s"):format(attempt, player.Name, tostring(err)))
+			local msg = tostring(err)
+			if string.find(msg, "StudioAccessToApisNotAllowed", 1, true) or string.find(msg, "API access", 1, true) then
+				warn("[Aetherveil] DataStores are off in Studio (enable API access in Game Settings). Using a temporary profile.")
+				return nil, false
+			end
+			warn(("[Aetherveil] Load attempt %d for %s failed: %s"):format(attempt, player.Name, msg))
 		end
 		task.wait(locked and 4 or math.min(2 * attempt, 8))
 	end

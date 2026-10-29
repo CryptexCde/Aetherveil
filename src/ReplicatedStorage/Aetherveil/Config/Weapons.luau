@@ -17,7 +17,7 @@ Weapons.Rarities = {
 Weapons.StarterWeapon = "Rustblade"
 
 -- How the tool sits in the hand (adjust if a model points the wrong way).
-Weapons.Grip = CFrame.new(0, -0.15, 0) * CFrame.Angles(math.rad(-90), 0, 0)
+Weapons.Grip = CFrame.new(0, -0.15, 0) * CFrame.Angles(math.rad(90), 0, 0)
 
 Weapons.Order = {
 	"Rustblade",

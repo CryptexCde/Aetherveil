@@ -105,11 +105,11 @@ local function startCamera()
 		end)
 	end
 	local camera = workspace.CurrentCamera
-	local orbit = radius * 0.62
+	local orbit = radius * 0.95
 	stopStep = Animator.Every(function(dt, t)
 		camera.CameraType = Enum.CameraType.Scriptable
 		local a = t * 0.035
-		local pos = center + Vector3.new(math.cos(a) * orbit, radius * 0.16 + math.sin(t * 0.12) * 6, math.sin(a) * orbit)
+		local pos = center + Vector3.new(math.cos(a) * orbit, radius * 0.3 + math.sin(t * 0.12) * 6, math.sin(a) * orbit)
 		local look = center + Vector3.new(math.cos(a + 2.2) * radius * 0.12, radius * 0.08, math.sin(a + 2.2) * radius * 0.12)
 		camera.CFrame = CFrame.lookAt(pos, look)
 		camera.FieldOfView = 62

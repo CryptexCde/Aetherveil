@@ -53,20 +53,15 @@ function Previews.Element(parent, def, size, position)
 		Color = isVoid and Color3.fromRGB(6, 4, 10) or def.Color,
 		Material = isVoid and Enum.Material.SmoothPlastic or Enum.Material.Neon,
 	}, world)
-	local halo = part({
-		Shape = Enum.PartType.Ball,
-		Size = Vector3.one * 2.9,
-		Color = def.Color,
-		Material = Enum.Material.Neon,
-		Transparency = 0.82,
-	}, world)
-	local ringPart = part({
-		Shape = Enum.PartType.Cylinder,
-		Size = Vector3.new(0.08, 4.2, 4.2),
-		Color = isVoid and def.Accent or def.Accent,
-		Material = Enum.Material.Neon,
-		Transparency = 0.25,
-	}, world)
+	local ring = {}
+	local SEGMENTS = 28
+	for i = 1, SEGMENTS do
+		ring[i] = part({
+			Size = Vector3.new(0.07, 0.07, 0.42),
+			Color = i % 4 == 0 and def.Color or def.Accent,
+			Material = Enum.Material.Neon,
+		}, world)
+	end
 	local shards = {}
 	for i = 1, 5 do
 		shards[i] = part({
@@ -80,8 +75,13 @@ function Previews.Element(parent, def, size, position)
 	local function step(_, t)
 		local pulse = 1 + math.sin(t * 2.2) * 0.04
 		core.Size = Vector3.one * 2.2 * pulse
-		halo.Size = Vector3.one * 2.9 * (1 + math.sin(t * 1.6) * 0.08)
-		ringPart.CFrame = CFrame.Angles(math.rad(70), t * 0.6, math.rad(18)) * CFrame.Angles(0, 0, math.rad(90))
+		local tilt = CFrame.Angles(math.rad(72), 0, math.rad(16))
+		for i, seg in ipairs(ring) do
+			local a = t * 0.5 + i * (math.pi * 2 / SEGMENTS)
+			local p = Vector3.new(math.cos(a) * 2.1, math.sin(a) * 2.1, 0)
+			local tangent = Vector3.new(-math.sin(a), math.cos(a), 0)
+			seg.CFrame = tilt * CFrame.lookAt(p, p + tangent)
+		end
 		for i, s in ipairs(shards) do
 			local a = t * 0.9 + i * (math.pi * 2 / #shards)
 			local r = 2.6 + math.sin(t * 1.3 + i) * 0.15

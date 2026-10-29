@@ -37,7 +37,7 @@ function Overlay.Init(fullLayer, canvas)
 		Position = UDim2.fromOffset(0, 92),
 		Size = UDim2.new(1, 0, 0, 44),
 		FontFace = Theme.Fonts.Display,
-		Text = "AETHERVEIL",
+		Text = "A\u{200C}ETHERVEIL",
 		TextSize = 40,
 		TextColor3 = Color3.new(1, 1, 1),
 		TextXAlignment = Enum.TextXAlignment.Center,
@@ -106,10 +106,15 @@ function Overlay.HideLoading()
 end
 
 local toastOrder = 0
+local showing = {}
 function Overlay.Toast(text, kind)
-	if not text or text == "" then
+	if not text or text == "" or showing[text] then
 		return
 	end
+	showing[text] = true
+	task.delay(3.4, function()
+		showing[text] = nil
+	end)
 	toastOrder += 1
 	local color = kind == "error" and C.Bad or (kind == "success" and C.Good or C.Accent)
 	Sound.Play(kind == "error" and "Error" or "Confirm")
