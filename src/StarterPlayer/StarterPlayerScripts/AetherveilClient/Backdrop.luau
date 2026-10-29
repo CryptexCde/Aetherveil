@@ -141,15 +141,26 @@ function Backdrop.Init(parent)
 	voidHole = UI.new("Frame", {
 		Name = "BlackHole",
 		AnchorPoint = Vector2.new(0.5, 0.5),
-		Position = UDim2.fromScale(0.55, 0.19),
-		Size = UDim2.fromScale(0.13, 0.13),
+		Position = UDim2.fromScale(0.4, 0.15),
+		Size = UDim2.fromScale(0.12, 0.12),
 		SizeConstraint = Enum.SizeConstraint.RelativeYY,
 		BackgroundTransparency = 1,
 		Parent = layer,
 	})
-	local haloFrame = UI.new("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromScale(1.9, 1.9), BackgroundColor3 = hex("#ff5ce0"), BackgroundTransparency = 0.75, BorderSizePixel = 0, Parent = voidHole })
-	UI.corner(haloFrame, 10000)
-	UI.gradient(haloFrame, nil, NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.1), NumberSequenceKeypoint.new(0.5, 1), NumberSequenceKeypoint.new(1, 1) })).Rotation = 0
+	-- soft glow: stacked circles that fade outwards
+	for i, size in ipairs({ 2.2, 1.7, 1.3, 0.95 }) do
+		local glow = UI.new("Frame", {
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Position = UDim2.fromScale(0.5, 0.5),
+			Size = UDim2.fromScale(size, size * 0.55),
+			BackgroundColor3 = hex("#ff5ce0"),
+			BackgroundTransparency = 0.9 - i * 0.04,
+			BorderSizePixel = 0,
+			ZIndex = 1,
+			Parent = voidHole,
+		})
+		UI.corner(glow, 10000)
+	end
 	local core = UI.new("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromScale(0.42, 0.42), BackgroundColor3 = Color3.new(0, 0, 0), BorderSizePixel = 0, ZIndex = 3, Parent = voidHole })
 	UI.corner(core, 10000)
 	UI.new("UIStroke", { Color = hex("#ff8af0"), Thickness = 2, Transparency = 0.2, Parent = core })
