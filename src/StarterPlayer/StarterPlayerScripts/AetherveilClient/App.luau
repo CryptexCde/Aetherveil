@@ -88,31 +88,93 @@ function App.Start(gui)
 		Overlay.Toast(text, kind)
 	end)
 
-	-- loading: assets, then the menu world, then the player's profile
+	-- loading: everything must be ready before the menu shows (unless the player skips)
+	local skipped = false
+	Overlay.SetSkip(function()
+		skipped = true
+	end)
+	local function waitUntil(check, timeout)
+		local started = os.clock()
+		while not skipped and not check() and os.clock() - started < (timeout or 60) do
+			task.wait(0.1)
+		end
+	end
+
+	-- 1. the game itself
+	Overlay.SetProgress(0, "Loading the game…")
+	waitUntil(function()
+		return game:IsLoaded()
+	end)
+
+	-- 2. every asset: the menu world, sounds, interface and the place's own content
 	local ContentProvider = game:GetService("ContentProvider")
 	local assets = Backdrop.Assets()
 	for _, s in ipairs(require(script.Parent.Sound).Preload()) do
 		table.insert(assets, s)
 	end
-	local total = #assets
-	Overlay.SetProgress(0, ("Loading assets… 0 / %d"):format(total))
-	for i, asset in ipairs(assets) do
-		pcall(function()
-			ContentProvider:PreloadAsync({ asset })
-		end)
-		Overlay.SetProgress(0.75 * i / total, ("Loading assets… %d / %d"):format(i, total))
+	local CONTENT_CLASSES = { "Decal", "Texture", "MeshPart", "SpecialMesh", "Sound", "ParticleEmitter", "Beam", "Trail", "SurfaceAppearance", "Sky", "ImageLabel", "ImageButton", "Animation" }
+	local seen = {}
+	for _, a in ipairs(assets) do
+		seen[a] = true
 	end
-	Overlay.SetProgress(0.78, "Preparing the world…")
-	Backdrop.StreamWorld()
-	Overlay.SetProgress(0.9, "Summoning your profile…")
+	for _, root in ipairs({ workspace, game:GetService("Lighting"), game:GetService("SoundService"), game:GetService("ReplicatedStorage"), player:WaitForChild("PlayerGui") }) do
+		for _, d in ipairs(root:GetDescendants()) do
+			if not seen[d] then
+				for _, class in ipairs(CONTENT_CLASSES) do
+					if d:IsA(class) then
+						seen[d] = true
+						table.insert(assets, d)
+						break
+					end
+				end
+			end
+		end
+	end
+	local total = #assets
+	local done = 0
+	local BATCH = 12
+	for i = 1, total, BATCH do
+		if skipped then
+			break
+		end
+		local batch = {}
+		for j = i, math.min(i + BATCH - 1, total) do
+			table.insert(batch, assets[j])
+		end
+		pcall(function()
+			ContentProvider:PreloadAsync(batch)
+		end)
+		done = math.min(total, i + BATCH - 1)
+		Overlay.SetProgress(0.7 * done / math.max(total, 1), ("Loading assets… %d / %d"):format(done, total))
+	end
+
+	-- 3. the menu world around the camera
+	if not skipped then
+		Overlay.SetProgress(0.72, "Preparing the world…")
+		Backdrop.StreamWorld()
+	end
+
+	-- 4. anything else still downloading
+	if not skipped then
+		local startQueue = math.max(1, ContentProvider.RequestQueueSize)
+		waitUntil(function()
+			local left = ContentProvider.RequestQueueSize
+			Overlay.SetProgress(0.8 + 0.1 * (1 - math.min(left, startQueue) / startQueue), ("Finishing up… %d left"):format(left))
+			return left == 0
+		end, 45)
+	end
+
+	-- 5. the player's profile (needed even when skipping)
+	Overlay.SetProgress(0.92, "Summoning your profile…")
 	local data = State.WaitForData()
 	SettingsApplier.Apply(data.Settings)
 	Backdrop.SetElement(data.Element)
 	State.Changed:Connect(function(d)
 		Backdrop.SetElement(d.Element)
 	end)
-	Overlay.SetProgress(1, "Ready")
-	task.wait(0.5)
+	Overlay.SetSkip(nil)
+	Overlay.SetProgress(1, skipped and "Skipped" or "Ready")
+	task.wait(skipped and 0.1 or 0.5)
 
 	if player:GetAttribute("InGame") then
 		self:EnterGame()

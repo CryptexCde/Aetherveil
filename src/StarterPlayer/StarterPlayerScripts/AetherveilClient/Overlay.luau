@@ -10,6 +10,7 @@ local Overlay = {}
 
 local loading, loadingText, stopSpin
 local progressBox, progressFill, progressTip, progressDetail, progressPercent
+local skipButton, skipCallback
 local toastHolder
 local dialogLayer
 
@@ -108,6 +109,29 @@ function Overlay.Init(fullLayer, canvas)
 		Parent = progressBox,
 	})
 
+	-- skip button (bottom right)
+	skipButton = UI.Button({
+		Parent = loading,
+		Name = "Skip",
+		Style = "secondary",
+		Color = C.Gold,
+		Text = "SKIP  ›",
+		TextSize = 18,
+		AnchorPoint = Vector2.new(1, 1),
+		Position = UDim2.new(1, -40, 1, -36),
+		Size = UDim2.fromOffset(150, 46),
+		ZIndex = 55,
+		OnClick = function()
+			if skipCallback then
+				local cb = skipCallback
+				skipCallback = nil
+				skipButton.Instance.Visible = false
+				cb()
+			end
+		end,
+	})
+	skipButton.Instance.Visible = false
+
 	stopSpin = Animator.Every(function(_, t)
 		if loading.Visible then
 			spinner.Rotation = 45 + t * 120
@@ -164,6 +188,20 @@ function Overlay.SetProgress(alpha, detail)
 	if detail then
 		progressDetail.Text = detail
 	end
+end
+
+-- Show the skip button (after a moment) with a callback, or hide it with nil.
+function Overlay.SetSkip(callback)
+	skipCallback = callback
+	if not callback then
+		skipButton.Instance.Visible = false
+		return
+	end
+	task.delay(1, function()
+		if skipCallback == callback and loading.Visible then
+			skipButton.Instance.Visible = true
+		end
+	end)
 end
 
 function Overlay.SetLoadingText(text)

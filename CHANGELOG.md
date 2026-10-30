@@ -14,6 +14,13 @@
 - Earth is now the only free element. Fire, Water and Air cost 750 shards, Lightning costs 1,500, and Void needs the Portal Walker game pass.
 - Game pass checks use real ownership only, with no free test access.
 - The game's normal lighting is restored when you leave the menu.
+- The loading screen now stays up until everything is loaded:
+  - the game itself
+  - every asset in the menu world, interface, sounds and map
+  - the area around the menu camera
+  - any downloads still in progress
+  - your profile
+- A **SKIP** button in the bottom right lets players go straight to the menu. Their profile still loads first.
 
 ## 2026-10-30 — Main menu and GUI system
 
