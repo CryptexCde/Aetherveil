@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-10-30 — Concept background and loading bar
+
+### Added
+- A 3D title-screen world like the concept, built at (-6000, 0, -6000) by `tools/BuildMenuScene.luau`:
+  - a terrain valley with jagged mountains and a cliff
+  - two giant swords planted in earth mounds, with cracked ground and rocks around them
+  - a low, ground-level camera that drifts and follows the mouse a little
+- The menu background takes on your equipped element's look: sky, fog, clouds, rock and grass colors, the sword gem's glow and the embers. Void adds a black hole, and Lightning adds storm flashes. Hovering an element card previews its look.
+- The loading screen now has a progress bar that counts assets as they load ("Loading assets… 12 / 89"), then prepares the world and loads your profile.
+
+### Changed
+- Earth is now the only free element. Fire, Water and Air cost 750 shards, Lightning costs 1,500, and Void needs the Portal Walker game pass.
+- Game pass checks use real ownership only, with no free test access.
+- The game's normal lighting is restored when you leave the menu.
+
 ## 2026-10-30 — Main menu and GUI system
 
 ### Added

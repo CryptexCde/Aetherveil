@@ -50,6 +50,10 @@ src/
    └─ PortalVisuals        Void visuals
 ```
 
+## Menu background
+
+The title screen is a real 3D scene in `workspace.MenuScene` plus terrain around (-6000, 0, -6000). To rebuild or tweak it, edit `tools/BuildMenuScene.luau` and run it in Studio's command bar (Edit mode). The menu's camera uses the `MenuCamera` and `MenuFocus` parts. The colors for each element are set in `AetherveilClient/Backdrop` (`LOOKS`).
+
 ## Setting up purchases
 
 Open `src/ReplicatedStorage/Aetherveil/Config/Store` and paste your IDs:
